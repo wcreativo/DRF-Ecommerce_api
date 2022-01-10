@@ -2,7 +2,7 @@ from os import stat
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
-from apps.users.api.serializers import UserSerializer
+from apps.users.api.serializers import UserSerializer, TestSerializer
 from rest_framework.decorators import api_view
 from rest_framework import status
 User = get_user_model()
@@ -13,10 +13,18 @@ def user_api_view(request):
 
     if request.method == 'GET':
         users = User.objects.all()
+        # Convierte cada instancia a JSON
         users_serializers = UserSerializer(users, many=True)
+        test_serializer = TestSerializer(data={"name": "Carolina", "age": 38})
+        if test_serializer.is_valid():
+            test_user = test_serializer.save()
+            print(test_user.id)
+        else:
+            print(test_serializer.errors)
         return Response(users_serializers.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
+        # Validación: En base a los campos del modelo analiza la estructura enviada
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
@@ -32,10 +40,12 @@ def user_detail_api_view(request, pk=None):
     if user:
 
         if request.method == 'GET':
+            # Convierte la instancia a JSON
             user_serializer = UserSerializer(user)
             return Response(user_serializer.data, status=status.HTTP_200_OK)
 
         elif request.method == 'PUT':
+            # Actualiza la data si conincide las llaves de la petición con los atributos de la instancia
             user_serializer = UserSerializer(user, data=request.data)
             if user_serializer.is_valid():
                 user_serializer.save()
