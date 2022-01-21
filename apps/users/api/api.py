@@ -1,6 +1,4 @@
-from os import stat
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from apps.users.api.serializers import UserSerializer, TestSerializer
 from rest_framework.decorators import api_view
@@ -12,15 +10,12 @@ User = get_user_model()
 def user_api_view(request):
 
     if request.method == 'GET':
-        users = User.objects.all()
+        users = User.objects.all().values('id', 'username', 'email', 'password')
         # Convierte cada instancia a JSON
         users_serializers = UserSerializer(users, many=True)
-        test_serializer = TestSerializer(data={"name": "Carolina", "age": 38})
-        if test_serializer.is_valid():
-            test_user = test_serializer.save()
-            print(test_user.id)
-        else:
-            print(test_serializer.errors)
+        # test_serializer = TestSerializer(data={"name": "Carolina", "email": "karitoverum@gmail.com"})
+        # if test_serializer.is_valid():
+        #     test_serializer.save()
         return Response(users_serializers.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
