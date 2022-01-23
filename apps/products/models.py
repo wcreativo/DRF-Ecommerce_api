@@ -1,3 +1,4 @@
+from unicodedata import category
 from django.db import models
 from simple_history.models import HistoricalRecords
 from apps.base.models import BaseModel
@@ -34,7 +35,6 @@ class CategoryProduct(BaseModel):
 
     # TODO: Define fields here
     description = models.CharField('Descripcion', max_length=50, unique=True, blank=True, null=True)
-    measure_unit = models.ForeignKey(MeasureUnit, on_delete=models.CASCADE, verbose_name='Unidad de medida')
     historical = HistoricalRecords()
 
     @property
@@ -82,6 +82,8 @@ class Product(BaseModel):
     name = models.CharField('Nombre de Producto', max_length=150, unique=True, blank=False, null=False)
     description = models.TextField('Descripcion de Producto', blank=False, null=False)
     image = models.ImageField('Imagen del Producto', upload_to='products/', blank=True, null=True)
+    measure_unit = models.ForeignKey(MeasureUnit, on_delete=models.CASCADE, verbose_name = 'Unidad de Medida')
+    category_product = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE, verbose_name = 'Categoria de Producto')
     historical = HistoricalRecords()
 
     class Meta:
